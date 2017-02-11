@@ -1,0 +1,408 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans|Ubuntu|Roboto');
+
+
+$base-color: #2174B1;
+$menu-bg: #373F45;
+$highlight: darken($base-color, 20%);
+// $gray:#e0e0e0;
+$dark-gray:#AFAFAF;
+$line-color:#D9D9D9;
+$top-height:36px;
+
+/************************ MIXIN *****************************************/
+@function convert-angle($value, $unit) {
+  $convertable-units: deg grad turn rad;
+  $conversion-factors: 1 (10grad/9deg) (1turn/360deg) (3.1415926rad/180deg);
+  @if index($convertable-units, unit($value)) and index($convertable-units, $unit) {
+    @return $value
+             / nth($conversion-factors, index($convertable-units, unit($value)))
+             * nth($conversion-factors, index($convertable-units, $unit));
+  }
+  
+  @warn "Cannot convert `#{unit($value)}` to `#{$unit}`.";
+}
+
+/// Test if `$value` is an angle
+/// @param {*} $value - Value to test
+/// @return {Bool}
+@function is-direction($value) {
+  $is-direction: index((to top, to top right, to right top, to right, to bottom right, to right bottom, to bottom, to bottom left, to left bottom, to left, to left top, to top left), $value);
+  $is-angle: type-of($value) == 'number' and index('deg' 'grad' 'turn' 'rad', unit($value));
+  
+  @return $is-direction or $is-angle;
+}
+
+/// Convert a direction to legacy syntax
+/// @param {Keyword | Angle} $value - Value to convert
+/// @require {function} is-direction
+/// @require {function} convert-angle
+@function legacy-direction($value) {
+  @if is-direction($value) == false {
+    @warn "Cannot convert `#{$value}` to legacy syntax because it doesn't seem to be an angle or a direction";
+  }
+  
+  $conversion-map: ( 
+    to top          : bottom,
+    to top right    : bottom left,
+    to right top    : left bottom,
+    to right        : left,
+    to bottom right : top left,
+    to right bottom : left top,
+    to bottom       : top,
+    to bottom left  : top right,
+    to left bottom  : right top,
+    to left         : right,
+    to left top     : right bottom,
+    to top left     : bottom right
+  );
+    
+  @if map-has-key($conversion-map, $value) {
+    @return map-get($conversion-map, $value);
+  }
+  
+  @return 90deg - convert-angle($value, 'deg');
+}
+
+/// Mixin printing a linear-gradient 
+/// as well as a plain color fallback 
+/// and the `-webkit-` prefixed declaration
+/// @access public
+/// @param {String | List | Angle} $direction - Linear gradient direction
+/// @param {Arglist} $color-stops - List of color-stops composing the gradient
+@mixin linear-gradient($direction, $color-stops...) {
+  @if is-direction($direction) == false {
+    $color-stops: ($direction, $color-stops);
+    $direction: 180deg;
+  }
+  
+  background: nth(nth($color-stops, 1), 1);
+  background: -webkit-linear-gradient(legacy-direction($direction), $color-stops);
+  background: linear-gradient($direction, $color-stops);
+}
+/************************ MIXIN *****************************************/
+
+
+html, body {
+    height:100%;
+    margin:0;
+    // font-family: 'Roboto', sans-serif;
+    // font-family: 'Raleway', sans-serif;
+    // font-family: 'Open Sans', sans-serif;
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 100%;
+}
+
+.emph{color:red !important;}
+
+.left{
+  width:100px;
+}
+.middle{
+  width:50%;
+  padding:0;
+}
+.right{
+  margin:0;
+  width:50%;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+.top-container {
+    background-color: $base-color;
+    height:$top-height;
+    display:flex;
+    display: -webkit-flex;
+    flex-direction: row;
+    -webkit-flex-direction: row;
+    -webkit-align-content: stretch;
+    align-content: stretch;
+
+    
+    .middle{
+      .search{
+        // margin:4px 10px 4px 10px;
+        margin-top:calc((#{$top-height} - 20px) / 2 - 1px);
+        margin-bottom:calc((#{$top-height} - 20px) / 2);
+        margin-left: 2%;
+        margin-right: 2%;
+        // width:200px;
+        width:96%;
+        -webkit-transition: width 1s ease;  
+        -moz-transition: width 1s ease;  
+        -o-transition: width 1s ease;  
+        -ms-transition: width 1s ease;  
+        transition: width 1s ease; 
+        -webkit-border-radius: 5px; 
+        -moz-border-radius: 5px; 
+        border-radius: 5px; 
+        border: none;
+        height:20px;
+        // &:focus{
+        //   width:400px;
+        // }
+      }
+    }
+
+    .right{
+      ul{
+        margin:0;
+        padding:0;
+        width:100%;
+
+        li{
+          padding:0;
+          min-width:15%;
+          float: left;
+          height:$top-height;
+          cursor: pointer;
+          list-style-type: none;
+          line-height: $top-height;
+
+          display: block;
+          color: white;
+          text-align: center;
+          padding-left: 4px;
+          padding-right: 4px;
+          text-decoration: none;
+          
+          &:hover {
+            background-color: lighten($base-color, 10%);
+          }
+        }
+        
+      }
+    }
+    
+}
+
+
+
+.main-container {
+    height:calc(100% - #{$top-height} - 1px);
+    display:flex;
+    display: -webkit-flex;
+    flex-direction: row;
+    -webkit-flex-direction: row;
+    -webkit-align-content: stretch;
+    align-content: stretch;
+}
+
+.menu {
+    background-color:$menu-bg;
+    border-bottom: 1px solid darken($menu-bg, 50%);
+}
+
+a{
+	text-decoration: none;
+	color: black;
+}
+
+.documents {
+	background-color:#F2F2F2;
+  position:relative;
+  font-size: 0.8rem;
+  border-right: 1px solid $line-color;
+  .child {
+    position:absolute;
+    width:100%;
+    height:100%;    
+	}
+
+	ul{
+		margin:0;
+		padding:0;
+		li{
+      cursor: pointer;
+			@include linear-gradient(to bottom, #F8F8F8 , #F2F2F2);
+			// @include linear-gradient(to bottom, red , blue);
+			// display: block;
+			// a{
+			// 	display: block;
+			// 	margin:0;
+			// 	padding:0;
+		 //    padding: 10px 20px;
+			// }
+			list-style-type: none;
+			line-height: 1rem;
+	    // margin: 0;
+      display: block;
+      margin:0;
+      padding:0;
+      padding: 10px 20px;
+	    border-bottom: 1px solid $line-color;
+	    p, span{
+	    	margin:0;
+	    	padding:0;
+	    }
+	    p:nth-child(1){
+	    	span{
+        font-weight: bold;
+        color:$highlight;
+        }
+        span.year{
+	    		font-weight:normal;
+	    		color:$base-color;
+	    		float: right;
+	    	}
+	    }
+	    p:nth-child(2){
+	    	span{
+	    		float: right;
+	    		color:$dark-gray;
+	    	}
+	    }
+      &:hover{
+        @include linear-gradient(to bottom, darken(#F8F8F8, 3%) , darken(#F8F8F8, 3%));
+      }
+		}
+    .paper_active{
+      @include linear-gradient(to bottom, #E3E3E3 , #D3D3D3);
+    }
+	}
+}
+
+.preview {
+    background-color: white;
+    position:relative;
+    padding: 2rem;
+    article{
+      // h1{
+      //   font-size: 1.5rem;
+      // }
+      h1{margin-top:0;}
+      p{line-height: 1.2rem;}
+      p.authors{color:$highlight; margin-bottom:0;}
+      p.journal{color:$dark-gray; margin-top:0;}
+      p.url{color:$dark-gray; margin-bottom:0; font-size: 0.7rem;}
+      div.abstract{
+        font-family: "CMS", "Open Sans", Helvetica, Arial, sans-serif;
+        text-align:justify;
+      }
+    }
+    hr {
+        margin: 1rem -2rem 1rem;
+        border: 0;
+        border-top: 1px solid #c9c7c7;
+    }
+    img{
+      padding:0;
+      margin-top:1rem;
+      margin-bottom:1rem;
+      width:auto;
+      max-width:100%;
+    }
+    a{
+      margin-right: 0.5rem;
+      &:hover {
+        color:$highlight;
+      }
+    }
+
+}
+
+.pdf{
+  margin:0;
+  padding:0;
+}
+
+
+.scrollable {
+     overflow-y:auto;
+}
+
+
+
+.btn {
+  cursor: pointer;
+  -webkit-border-radius: 7;
+  -moz-border-radius: 7;
+  border-radius: 7px;
+  color: #ffffff;
+  padding: 4px;
+  padding-left: 6px;
+  padding-right: 6px;
+  background: $dark-gray;
+  text-decoration: none;
+  &:hover {
+    color: #ffffff !important;
+    background: $base-color;
+    text-decoration: none;
+  }
+}
+
+
+
+
+
+
+
+
+@font-face{
+  font-family:'CMS';
+  src:url('../fonts/Serif/cmunrm.eot');
+  src:url('../fonts/Serif/cmunrm.eot?#iefix') format('embedded-opentype'), url('../fonts/Serif/cmunrm.woff') format('woff'), url('../fonts/Serif/cmunrm.ttf') format('truetype'), url('../fonts/Serif/cmunrm.svg#cmunrm') format('svg');
+  font-weight:normal;
+  font-style:normal;
+}
+@font-face{
+  font-family:'CMS';
+  src:url('../fonts/Serif/cmunbx.eot');
+  src:url('../fonts/Serif/cmunbx.eot?#iefix') format('embedded-opentype'), url('../fonts/Serif/cmunbx.woff') format('woff'), url('../fonts/Serif/cmunbx.ttf') format('truetype'), url('../fonts/Serif/cmunbx.svg#cmunbx') format('svg');
+  font-weight:bold;
+  font-style:normal;
+}
+@font-face{font-family:'CMS';
+  src:url('../fonts/Serif/cmunti.eot');
+  src:url('../fonts/Serif/cmunti.eot?#iefix') format('embedded-opentype'), url('../fonts/Serif/cmunti.woff') format('woff'), url('../fonts/Serif/cmunti.ttf') format('truetype'), url('../fonts/Serif/cmunti.svg#cmunti') format('svg');
+  font-weight:normal;
+  font-style:italic;
+}
+@font-face{font-family:'CMS';
+  src:url('../fonts/Serif/cmunbi.eot');
+  src:url('../fonts/Serif/cmunbi.eot?#iefix') format('embedded-opentype'), url('../fonts/Serif/cmunbi.woff') format('woff'), url('../fonts/Serif/cmunbi.ttf') format('truetype'), url('../fonts/Serif/cmunbi.svg#cmunbi') format('svg');
+  font-weight:bold;
+  font-style:italic;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Turn on custom 8px wide scrollbar */
+::-webkit-scrollbar {
+  width: 10px; /* 1px wider than Lion. */
+  /* This is more usable for users trying to click it. */
+  background-color: rgba(0,0,0,0);
+  -webkit-border-radius: 100px;
+}
+/* hover effect for both scrollbar area, and scrollbar 'thumb' */
+::-webkit-scrollbar:hover {
+  background-color: rgba(0, 0, 0, 0.09);
+}
+ 
+/* The scrollbar 'thumb' ...that marque oval shape in a scrollbar */
+::-webkit-scrollbar-thumb:vertical {
+  /* This is the EXACT color of Mac OS scrollbars. 
+     Yes, I pulled out digital color meter */
+  background: rgba(0,0,0,0.5);
+  -webkit-border-radius: 100px;
+  background-clip: padding-box;
+  border: 2px solid rgba(0, 0, 0, 0);
+  min-height: 10px; /*Prevent it from getting too small */
+}
+::-webkit-scrollbar-thumb:vertical:active {
+  background: rgba(0,0,0,0.61); /* Some darker color when you click it */
+  -webkit-border-radius: 100px;
+}
+
