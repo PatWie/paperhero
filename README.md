@@ -20,7 +20,7 @@ Unfortunately, you are only allowed to send 100 request per day when using the G
 ## Install locally
 ````bash
     # get montage command
-    sudo apt-get install imagemagick imagemagick-doc 
+    sudo apt-get install imagemagick imagemagick-doc
     cd /var/www/papers
     git clone https://github.com/PatWie/paperhero.git
     cd paperhero
@@ -39,7 +39,11 @@ Now point your browser to http://localhost:8888
 
 I assume you have already NginX properly configured and running. An example config file is given in [docs](docs). This uses NginX for serving static assets and as a load-balancer for the python app itself.
 ````bash
+    # get montage command and utils for htaccess
+    sudo apt-get install imagemagick imagemagick-doc apache2-utils
     cd paperhero 
+    sudo htpasswd -c .htpasswd <username>
+    # make directoy writeable by current user
     sudo chown -R your-user:your-user .
     sudo cp docs/paperhero.conf /etc/nginx/sites-available/paperhero.conf
     # edit (server-name, path, port)
