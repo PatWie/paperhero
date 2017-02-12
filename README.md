@@ -1,5 +1,6 @@
+# Manager for PDF papers (Arxiv-Binding)
 
-# Tired of browsing directories of pdfs?
+Tired of browsing directories of pdfs?
 
 This small and hackable applications allows you to store your pdfs locally on your server or desktop pc. It just needs **Python2.7**. There is no database! It is more or less a rewrite of my [old implementation](https://github.com/PatWie/papershelf).
 
