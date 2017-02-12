@@ -9,6 +9,8 @@ Features:
 - fuzzy search your local papers
 - paper-preview generator
 
+[![Demo](./docs/youtube_thumb.jpg)](https://www.youtube.com/watch?v=vVOzSyECiSE "PaperHero - click to watch")
+
 ## Get Google-Key
 To download papers from arxiv directly you need to aquire a Google developer-key and a custom search-engine-key.
 
