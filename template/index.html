@@ -53,6 +53,10 @@
 			      		<p><span>query: <span class="emph">{{query.value}}</span></span></p>
 				      	<p>search paper on arxiv and add it to collection</p>
 			      </li>
+			      <li ng-show="query.value && ( (search_scope == 'local') || (papers.length == 0))" ng-click="importPaper( query.value)">
+			      		<p><span>query: <span class="emph">{{query.value}}</span></span></p>
+				      	<p>import paper (only if id is a valid arxiv id: xxxx.xxxxx)</p>
+			      </li>
 			    </ul>
 	        </div>
 	    </div>
