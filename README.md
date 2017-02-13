@@ -11,14 +11,6 @@ Features:
 
 [![Demo](./docs/youtube_thumb.jpg)](https://www.youtube.com/watch?v=vVOzSyECiSE "PaperHero - click to watch")
 
-## Get Google-Key
-To download papers from arxiv directly you need to aquire a Google developer-key and a custom search-engine-key.
-
-- Goto https://code.google.com/apis/console/?api=plus to generate a new developerkey and 
-- then https://console.developers.google.com/apis/api/customsearch/overview?project=<your-project-id> to 
-
-Unfortunately, you are only allowed to send 100 request per day when using the Google-API.
-
 ## Install locally
 ````bash
     # get montage command
@@ -27,12 +19,9 @@ Unfortunately, you are only allowed to send 100 request per day when using the G
     git clone https://github.com/PatWie/paperhero.git
     cd paperhero
     pip install -r requirements.txt --user
-    mkdir data
-    mkdir js
-    mkdir css
     python2.7 compile.py # compile sass and minify js
     # ready to start
-    python2.7 app.py --port 8888 --cx '0815:foobar' --devkey "morefoobar"
+    python2.7 app.py --port 8888
 ````
 
 Now point your browser to http://localhost:8888
@@ -53,7 +42,7 @@ I assume you have already NginX properly configured and running. An example conf
     # activate site
     sudo ln -s /etc/nginx/sites-available/paperhero.conf /etc/nginx/sites-enabled/
     # start app (in another terminal)
-    python2.7 app.py --port 8100 --cx '0815:foobar' --devkey "morefoobar"&
+    python2.7 app.py --port 8100&
     sudo service nginx reload
 ````
 

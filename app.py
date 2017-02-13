@@ -7,11 +7,10 @@ import json
 import urllib2
 import re
 import subprocess
-from googleapiclient.discovery import build
 import logging
 import HTMLParser
 import argparse
-
+import xmltodict
 
 logging.getLogger('googleapicliet.discovery_cache').setLevel(logging.ERROR)
 root = os.path.dirname(__file__)
@@ -54,7 +53,7 @@ class LocalPapersHandler(tornado.web.RequestHandler):
         return all_data
 
 
-class FetchArxivHandler(tornado.web.RequestHandler):
+class DownloadArxivHandler(tornado.web.RequestHandler):
     def get(self, arxiv_url):
         print arxiv_url
         self.set_header('Content-Type', 'application/json')
@@ -120,38 +119,30 @@ class FetchArxivHandler(tornado.web.RequestHandler):
             print arxiv_url
 
 
-class WebPapersHandler(tornado.web.RequestHandler):
-    def initialize(self, devkey, cx):
-        self.devkey = devkey
-        self.cx = cx
-        print "use devkey", devkey
-        print "use cx", cx
+class QueryArxivHandler(tornado.web.RequestHandler):
 
     def get(self, q=""):
         self.set_header('Content-Type', 'application/json')
         self.write(json.dumps(self.web_papers(q)))
 
     def web_papers(self, q=None):
-        service = build("customsearch", "v1", developerKey=self.devkey)
-        res = service.cse().list(q=q, cx=self.cx).execute()
-
+        query = "http://export.arxiv.org/api/query?search_query=cat:cs.CV+AND+ti:+%s&start=0&max_results=25" % q
+        raw_result = urllib2.urlopen(query).read()
+        d = xmltodict.parse(raw_result)
         all_data = []
-        for entry in res['items']:
-            if "arxiv.org" in entry['formattedUrl']:
-                if "pagemap" in entry.keys():
-                    if "metatags" in entry["pagemap"].keys():
-                        try:
-                            pp = dict()
-                            pp['id'] = entry['pagemap']['metatags'][0]['citation_arxiv_id']
-                            pp['title'] = entry['pagemap']['metatags'][0]['citation_title']
-                            pp['authors'] = entry['pagemap']['metatags'][0]['citation_author']
-                            pp['year'] = entry['pagemap']['metatags'][0]['citation_online_date']
-                            pp['url'] = entry['pagemap']['metatags'][0]['citation_pdf_url']
-                            pp['abstract'] = entry['snippet']
-                            pp['search_scope'] = 'web'
-                            all_data.append(pp)
-                        except Exception:
-                            pass
+        for entry in d['feed']['entry']:
+            try:
+                pp = dict()
+                pp['title'] = entry['title']
+                pp['id'] = entry['id'].replace("http://arxiv.org/abs/", "")
+                pp['authors'] = "; ".join([str(x['name']) for x in entry['author']    ])
+                pp['year'] = entry['published']
+                pp['url'] = entry['id']
+                pp['abstract'] = entry['summary']
+                pp['search_scope'] = 'web'
+                all_data.append(pp)
+            except Exception:
+                pass
         return all_data
 
 
@@ -163,15 +154,13 @@ class Application(tornado.web.Application):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-p', "--port", default="8888", type=int)
-    parser.add_argument('-cx', "--cx", default="", type=str)
-    parser.add_argument('-dk', "--devkey", default="", type=str)
     args = parser.parse_args()
 
     print("start Application ...")
     application = Application([
         (r'/papers/local', LocalPapersHandler, dict(path="data")),
-        (r'/papers/web/(.*)', WebPapersHandler, dict(devkey=args.devkey, cx=args.cx)),
-        (r'/fetch/arxiv/(.*)', FetchArxivHandler),
+        (r'/papers/web/(.*)', QueryArxivHandler),
+        (r'/fetch/arxiv/(.*)', DownloadArxivHandler),
         (r"/(.*)", tornado.web.StaticFileHandler, {"path": root, "default_filename": "template/index.html"})
     ])
 
