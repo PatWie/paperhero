@@ -11,7 +11,8 @@ def parse_arxiv_entry(entry):
     paper['abstract'] = str(entry['summary']).replace("\n", "")
     try:
         authors = [x.values()[0] for x in entry['author']]
-    except Exception:
+    except Exception as e:
+        logger.warn(e)
         authors = entry['author']
     paper['authors'] = "; ".join(authors)
     paper['year'] = str(entry['published'])
@@ -31,7 +32,13 @@ class QueryHandler(base.QueryHandler):
         found_papers = []
         if 'entry' in raw_xml['feed'].keys():
             logger.info("found %i papers" % len(raw_xml['feed']['entry']))
-            for entry in raw_xml['feed']['entry']:
+            if not isinstance(raw_xml['feed']['entry'], list):
+                # ugly fix for single paper
+                entries = [raw_xml['feed']['entry']]
+            else:
+                entries = raw_xml['feed']['entry']
+
+            for entry in entries:
                 try:
                     found_papers.append(parse_arxiv_entry(entry))
                 except Exception as e:
