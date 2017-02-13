@@ -4,3 +4,4 @@ jsmin
 pyyaml
 google-api-python-client
 xmltodict
+termcolor
