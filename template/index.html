@@ -30,23 +30,28 @@
 	</div>
 	<div class="main-container">
 	    <div class="left menu">
-	    &nbsp;
+	    <ul>
+	    	<li><i class="fa fa-folder" aria-hidden="true"></i> Source
+	    		<ul>
+	    			<li ng-click="search('local')"><i class="fa fa-home" aria-hidden="true"></i> Local</li>
+	    			<li ng-click="retrievePaper( query.value)"><i class="fa fa-rss" aria-hidden="true"></i> Arxiv</li>
+	    		</ul>
+	    	</li>
+	    </ul>
 	    </div>
 	    <div class="middle documents">
 	        <div class="child scrollable">
 	            <ul>
 	              <li ng-repeat="paper in papers  | fuzzyBy: paper.title: query.value"  ng-click="showPaper(paper.id)"  ng-class="paperActive('{{paper.title}}')">
-			      		<p><span ng-bind-html="paper.title | emph:query.value"></span>
+	              		<i class="fa fa-paperclip" aria-hidden="true" ng-show="paper.in_lib"></i>
+	              		<i class="fa fa-reply" aria-hidden="true" ng-show="!paper.in_lib"></i>
+			      		<p><span class="title" ng-bind-html="paper.title | emph:query.value"></span>
 			      		<span class="year">{{paper.year}}</span></p>
-				      	<p>{{paper.authors}} <span>{{paper.publisher}}</span></p>
+				      	<p><span class="authors">{{paper.authors}}</span> <span class="publisher">{{paper.publisher}}</span></p>
 			      </li>
-			      <li ng-show="query.value && search_scope == 'local'" ng-click="retrievePaper( query.value)">
+			      <li ng-show="query.value && ( (search_scope == 'local') || (papers.length == 0))" ng-click="retrievePaper( query.value)">
 			      		<p><span>query: <span class="emph">{{query.value}}</span></span></p>
 				      	<p>search paper on arxiv and add it to collection</p>
-			      </li>
-			      <li ng-show="search_scope == 'web'" ng-click="search('local')">
-			      		<p><span>query: <span class="emph">{{query.value}}</span></span></p>
-				      	<p>searchin within local collection</p>
 			      </li>
 			    </ul>
 	        </div>
@@ -59,7 +64,7 @@
 				<p class="journal">{{details.publisher}}</p>
 				<a class="btn" ng-click="readPaper()" ng-show="details.search_scope == 'local'"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> read</a>
 				<a class="btn" target="_blank" href="{{details.pdf}}" ng-show="details.search_scope == 'local'"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> download</a>
-				<a class="btn" ng-click="importPaper(details.url)"  ng-show="details.search_scope == 'web'">import</a>
+				<a class="btn" ng-click="importPaper(details.id)"  ng-show="details.search_scope == 'arxiv'">import</a>
 				<hr />
 				<div class="abstract">{{details.abstract}}</div>
 				<img src="{{details.jpg}}" />

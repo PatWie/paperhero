@@ -95,7 +95,7 @@ html, body {
 .emph{color:red !important;}
 
 .left{
-  width:100px;
+  width:200px;
 }
 .middle{
   width:50%;
@@ -107,6 +107,16 @@ html, body {
   padding-left: 2rem;
   padding-right: 2rem;
 }
+
+.flex{
+    display:flex;
+    display: -webkit-flex;
+    flex-direction: row;
+    -webkit-flex-direction: row;
+    -webkit-align-content: stretch;
+    align-content: stretch;
+}
+
 .top-container {
     background-color: $base-color;
     height:$top-height;
@@ -150,6 +160,7 @@ html, body {
         width:100%;
 
         li{
+
           padding:0;
           min-width:15%;
           float: left;
@@ -190,6 +201,29 @@ html, body {
 .menu {
     background-color:$menu-bg;
     border-bottom: 1px solid darken($menu-bg, 50%);
+    .fa{
+            margin-right:0.5rem;
+          }
+    ul{
+      list-style-type: none;
+      line-height: 1rem;
+      margin:1rem;
+      padding:0;
+      color:#c5c5c5;
+      font-weight: bold;
+      ul{
+        margin-top:0;
+        cursor: pointer;
+        // second child
+        font-weight: normal;
+        li{
+          margin-top:0.2rem;
+          &:hover{
+            color:lighten(#c5c5c5, 20%);
+          }
+        }
+      }
+    }
 }
 
 a{
@@ -234,22 +268,31 @@ a{
 	    	margin:0;
 	    	padding:0;
 	    }
-	    p:nth-child(1){
-	    	span{
-        font-weight: bold;
-        color:$highlight;
+      .fa{
+        padding-right: 1.5rem;
+        float:left;
+        font-size:1.5rem;
+      }
+	    p{
+        span.title{
+          font-weight: bold;
+          color:$highlight;
         }
+        
+
         span.year{
-	    		font-weight:normal;
-	    		color:$base-color;
-	    		float: right;
-	    	}
-	    }
-	    p:nth-child(2){
-	    	span{
-	    		float: right;
-	    		color:$dark-gray;
-	    	}
+          font-weight:normal;
+          color:$base-color;
+          float: right;
+        }
+        span.authors{
+          
+        }
+        span.publisher{
+          float: right;
+          color:$dark-gray;
+        }
+
 	    }
       &:hover{
         @include linear-gradient(to bottom, darken(#F8F8F8, 3%) , darken(#F8F8F8, 3%));
@@ -257,7 +300,12 @@ a{
 		}
     .paper_active{
       @include linear-gradient(to bottom, #E3E3E3 , #D3D3D3);
+      &:hover{
+        @include linear-gradient(to bottom, darken(#E3E3E3, 3%) , darken(#D3D3D3, 3%));
+      }
+
     }
+
 	}
 }
 

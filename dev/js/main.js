@@ -36,6 +36,7 @@ var app = angular.module('PaperHeroApp', ['ngSanitize', 'angular.filter', 'angul
                 // default
                 $scope.papers = [];
                 $scope.details = [];
+                $scope.ids = [];
                 $scope.search_scope = 'local';
                 $scope.right_pane = 'details';
                 $scope.show_pdf_name = '';
@@ -47,18 +48,33 @@ var app = angular.module('PaperHeroApp', ['ngSanitize', 'angular.filter', 'angul
                     }else{
                         $scope.search_scope = 'local'
                     }
-                    url = "/papers/" + $scope.search_scope
+                    url = "/papers/" + $scope.search_scope + "/"
                     if (typeof q != 'undefined') {
-                        url = url + "/" + q
+                        url = url + q
                     }
                     $http.get(url).then(function(papersResponse) {
                         $scope.papers = [];
                         angular.forEach(papersResponse.data, function(k, v) {
+                            if($scope.search_scope == 'local'){
+                                k['in_lib'] = true;
+                            }else{
+                                k['in_lib'] = ($scope.ids.indexOf(k.id) != -1);
+                            }
                             $scope.papers.push(k);
                         });
                     });
                 }
-                $scope.search();
+                $scope.get_ids = function(){
+                    return $http.get("/papers/local/").then(function(papersResponse) {
+                        $scope.ids = [];
+                        angular.forEach(papersResponse.data, function(k, v) {
+                            $scope.ids.push(k.id);
+                        });
+                    });
+                }
+                $scope.get_ids().then(function(){$scope.search();});
+
+                
   
                 // show details
                 $scope.showPaper = function(id) {
@@ -70,16 +86,21 @@ var app = angular.module('PaperHeroApp', ['ngSanitize', 'angular.filter', 'angul
                 };
                 // get paper from google
                 $scope.retrievePaper = function(query_string) {
-                    $scope.search("web", query_string);
+                    if(query_string != ""){
+                        $scope.search("arxiv", query_string);
+                    }
                 };
                 $scope.setRightPane = function(mode) {
                     $scope.right_pane = mode;
-                    if($scope.show_pdf_name == ''){
-                        $scope.readPaper();
+                    if(mode == "pdf"){
+                        if($scope.show_pdf_name == ''){
+                            $scope.readPaper();
+                        }
+                        if($scope.show_pdf_name != $scope.details.pdf){
+                            $scope.readPaper();
+                        }
                     }
-                    if($scope.show_pdf_name != $scope.details.pdf){
-                        $scope.readPaper();
-                    }
+                    
                 };
                 // get paper from google
                 $scope.readPaper = function() {
