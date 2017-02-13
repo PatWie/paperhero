@@ -21,14 +21,14 @@ Features:
     pip install -r requirements.txt --user
     python2.7 compile.py # compile sass and minify js
     # ready to start
-    python2.7 app.py --port 8888
+    python2.7 paperhero.py --port 8888
 ````
 
 Now point your browser to http://localhost:8888
 
 ## Install on your VirtualPrivateServer (VPS)
 
-I assume you have already NginX properly configured and running. An example config file is given in [docs](docs). This uses NginX for serving static assets and as a load-balancer for the python app itself.
+I assume you already have NGINX properly configured and running. An example config file is given in [docs](docs). This uses NGINX for serving static assets and as a reverse-proxy for the python app itself.
 ````bash
     # get montage command and utils for htaccess
     sudo apt-get install imagemagick imagemagick-doc apache2-utils
@@ -42,9 +42,15 @@ I assume you have already NginX properly configured and running. An example conf
     # activate site
     sudo ln -s /etc/nginx/sites-available/paperhero.conf /etc/nginx/sites-enabled/
     # start app (in another terminal)
-    python2.7 app.py --port 8100&
+    python2.7 paperhero.py --port 8100&
     sudo service nginx reload
 ````
 
+
+## Stop app
+````bash
+    ps aux | grep [p]aperhero
+    kill ....
+````
 
 
