@@ -2,7 +2,7 @@ import os
 import tornado.ioloop
 import tornado.web
 import argparse
-import handlers
+import lib.handlers as handlers
 from logger import logger
 
 
@@ -24,7 +24,7 @@ if __name__ == '__main__':
         (r'/papers/local/(.*)', handlers.local.QueryHandler),
         (r'/papers/arxiv/(.*)', handlers.arxiv.QueryHandler),
         (r'/fetch/arxiv/(.*)', handlers.arxiv.FetchHandler),
-        (r'/notes/(.*)', handlers.notes.NotesHandler),
+        (r'/text/(.*)', handlers.base.TextHandler),
         (r"/(.*)", tornado.web.StaticFileHandler, {"path": root, "default_filename": "template/index.html"})
     ])
 

@@ -347,21 +347,35 @@ a{
         color:$highlight;
       }
     }
+    .bibtex{
+      font-family: 'Lucida Sans Typewriter', 'Lucida Console', "Ubuntu Mono", 'Bitstream Vera Sans Mono', monospace;
+      font-size: 0.6rem;
+      height:auto;
+    }
 
 }
 
-.notes{
-  .live{
-    height:60%;
-  }
-  textarea{
-    width:100%;
-    height: 20vh;
+textarea{
     border: 1px solid #eee;
     outline: none;
+    width:100%;
   }
+
+.notes{
+  .live{
+    height:auto;
+  }
+
   .btn{
 
+  }
+}
+
+.meta{
+  textarea{
+    height: 80vh;
+    font-family: 'Lucida Sans Typewriter', 'Lucida Console', "Ubuntu Mono", 'Bitstream Vera Sans Mono', monospace;
+    font-size: 0.6rem;
   }
 }
 

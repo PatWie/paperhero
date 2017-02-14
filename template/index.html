@@ -7,10 +7,15 @@
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="vendor/font-awesome-4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="vendor/loadingbar/loading-bar.min.css">
-<script src="http://cdn.rawgit.com/showdownjs/showdown/master/dist/showdown.min.js"></script>
+<link rel="stylesheet" href="vendor/codemirror/codemirror.css">
+<script src="vendor/codemirror/codemirror.js"></script>
+<script src="vendor/codemirror/mode/markdown/markdown.js"></script>
+<script src="vendor/codemirror/mode/yaml/yaml.js"></script>
+<script src="vendor/showdownjs/showdown.min.js"></script>
 <script src="vendor/angularjs/angular.min.js"></script>
 <script src="vendor/angularjs/angular-sanitize.min.js"></script>
 <script src="vendor/angularjs/angular-filter.min.js"></script>
+<script src="vendor/codemirror/ui-codemirror.js"></script>
 <script src="vendor/loadingbar/loading-bar.min.js"></script>
 <script src="vendor/mathjax-2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" type="text/javascript" async ></script>
 </head>
@@ -29,6 +34,7 @@
 				<li ng-click="setRightPane('details')">details</li>
 				<li ng-show="details.pdf" ng-click="setRightPane('pdf')">pdf</li>
 				<li ng-show="details.pdf" ng-click="setRightPane('notes')">notes</li>
+				<li ng-show="details.pdf" ng-click="setRightPane('meta')">meta</li>
 			</ul>
 		</div>
 	</div>
@@ -53,11 +59,11 @@
 			      		<span class="year">{{paper.year}}</span></p>
 				      	<p><span class="authors">{{paper.authors}}</span> <span class="publisher">{{paper.publisher}}</span></p>
 			      </li>
-			      <li ng-show="query.value" ng-click="retrievePaper( query.value)">
+			      <li ng-show="query.value && (search_scope == 'arxiv')" ng-click="retrievePaper( query.value)">
 			      		<p><span>query: <span class="emph">{{query.value}}</span></span></p>
 				      	<p>search paper on arxiv and add it to collection</p>
 			      </li>
-			      <li ng-show="query.value && ( (search_scope == 'local') || (papers.length == 0))" ng-click="importPaper(query.value)">
+			      <li ng-show="query.value && ( (search_scope == 'arxiv') || (papers.length == 0))" ng-click="importPaper(query.value)">
 			      		<p><span>import: <span class="emph">{{query.value}}</span></span></p>
 				      	<p>import by arxiv-id (only if id is a valid arxiv id: xxxx.xxxxx)</p>
 			      </li>
@@ -66,31 +72,45 @@
 	    </div>
 	    <div class="right preview" ng-show="right_pane == 'details'">
 	        <article>
-				<p class="url">{{details.url}}</p>
-				<h1>{{details.title}}</h1>
-				<p class="authors">{{details.authors}} ({{details.year}})</p>
-				<p class="journal">{{details.publisher}}</p>
-				<a class="btn" ng-click="readPaper()" ng-show="details.search_scope == 'local'"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> read</a>
-				<a class="btn" target="_blank" href="{{details.pdf}}" ng-show="details.search_scope == 'local'"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> download</a>
-				<a class="btn" ng-click="importPaper(details.id)"  ng-show="details.search_scope == 'arxiv'">import</a>
-				<hr />
-				<div class="abstract latex"  mathjax-bind="details.abstract">{{details.abstract}}</div>
-				<img src="{{details.jpg}}" />
-				<hr />
-				
-				
-			</article>
-
+						<p class="url">{{details.url}}</p>
+						<h1>{{details.title}}</h1>
+						<p class="authors">{{details.authors}} ({{details.year}})</p>
+						<p class="journal">{{details.publisher}}</p>
+						<a class="btn" ng-click="readPaper()" ng-show="details.search_scope == 'local'"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> read</a>
+						<a class="btn" target="_blank" href="{{details.pdf}}" ng-show="details.search_scope == 'local'"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> download</a>
+						<a class="btn" ng-click="importPaper(details.id)"  ng-show="details.search_scope == 'arxiv'">import</a>
+						<hr />
+						<div class="abstract latex"  mathjax-bind="details.abstract">{{details.abstract}}</div>
+						<img src="{{details.jpg}}" />
+						<hr />
+						<pre class="bibtex">{{details.bibtex}}</pre>
+					</article>
 	    </div>
 	    <div class="right pdf" id="pdf_area" ng-show="right_pane == 'pdf'">
 	    </div>
 	    <div class="right notes" ng-show="right_pane == 'notes'">
-	    <p class="latex live"  mathjax-bind="details.notes">
-		</p>
-		<form>
-		<textarea ng-model="details.notes" ng-model-options="{debounce: 1000}"></textarea>
-		<p><a class="btn" ng-click="saveNotes()">save notes</a></p>
-		</form>
+	    	<p class="latex live"  mathjax-bind="details.notes">
+				</p>
+				<form>
+				<div ui-codemirror="{
+      lineNumbers: true,
+      lineWrapping : true,
+      mode: 'markdown'
+    } " ng-model="details.notes" ng-model-options="{debounce: 1000}"></div>
+				<p><a class="btn" ng-click="saveNotes()">save notes</a></p>
+				</form>
+	    </div>
+	    <div class="right meta" ng-show="right_pane == 'meta'">
+	    <form>
+	    	<p>Attention! You edit the raw data!</p>
+				<div ui-codemirror="{
+      lineNumbers: true,
+      lineWrapping : true,
+      mode: 'yaml'
+    }" ng-model="details.meta"></div>
+				<p><a class="btn" ng-click="saveMeta()">save meta</a></p>
+				<p><a class="btn" ng-click="loadMeta()">load meta</a></p>
+				</form>
 	    </div>
 	</div>
 	<script src="js/main.min.js"></script>

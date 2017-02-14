@@ -38,7 +38,8 @@ MathJax.Hub.Config({
 });
 MathJax.Hub.Configured();
 
-var app = angular.module('PaperHeroApp', ['ngSanitize', 'angular.filter', 'angular-loading-bar']) // , , 'dropzone'
+var app = angular.module('PaperHeroApp', ['ngSanitize', 'angular.filter',
+                'angular-loading-bar', 'ui.codemirror']) // , , 'dropzone'
         .controller('PaperHeroCtrl', ['$scope', '$http',
             function($scope, $http, $sce, $q) {
                 // default
@@ -83,7 +84,7 @@ var app = angular.module('PaperHeroApp', ['ngSanitize', 'angular.filter', 'angul
                 }
                 $scope.get_ids().then(function(){
                     $scope.search().then(function(){
-                        $scope.details = $scope.papers[0];
+                        $scope.showPaper($scope.papers[0].id);
                     })
                 });
 
@@ -93,11 +94,10 @@ var app = angular.module('PaperHeroApp', ['ngSanitize', 'angular.filter', 'angul
                 $scope.showPaper = function(id) {
                     currentIndex = $scope.papers.map(function(d) {return d.id;}).indexOf(id);
                     $scope.details = $scope.papers[currentIndex];
+                    $scope.loadMeta();
+                    $scope.loadNotes();
                     if($scope.right_pane == "pdf"){
                         $scope.readPaper();
-                    }
-                    if($scope.right_pane == "notes"){
-                        $scope.loadNotes();
                     }
                     // MathJax.Hub.Queue(["Typeset", MathJax.Hub, document.getElementById('abstract')]);
                 };
@@ -166,13 +166,25 @@ var app = angular.module('PaperHeroApp', ['ngSanitize', 'angular.filter', 'angul
                 $scope.saveNotes = function () {
                     $http({
                         method: 'POST',
-                        url: '/notes/' + $scope.details.id,
+                        url: '/text/' + $scope.details.id + ".md",
                         data: $scope.details.notes
                     });
                 };
                 $scope.loadNotes = function () {
-                    return $http.get('/notes/' + $scope.details.id).then(function(papersResponse) {
-                        $scope.details.notes = papersResponse.data['notes']
+                    return $http.get('/text/' + $scope.details.id + ".md").then(function(response) {
+                        $scope.details.notes = response.data['data']
+                    });
+                };
+                $scope.saveMeta = function () {
+                    $http({
+                        method: 'POST',
+                        url: '/text/' + $scope.details.id + ".yml",
+                        data: $scope.details.meta
+                    });
+                };
+                $scope.loadMeta = function () {
+                    return $http.get('/text/' + $scope.details.id + ".yml").then(function(response) {
+                        $scope.details.meta = response.data['data']
                     });
                 };
 
