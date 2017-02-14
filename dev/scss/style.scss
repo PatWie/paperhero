@@ -308,8 +308,11 @@ a{
 
 	}
 }
-
-.preview {
+.latex{
+  font-family: "CMS", "Open Sans", Helvetica, Arial, sans-serif;
+  text-align:justify;
+}
+.preview, .notes {
     background-color: white;
     position:relative;
     padding: 2rem;
@@ -323,8 +326,7 @@ a{
       p.journal{color:$dark-gray; margin-top:0;}
       p.url{color:$dark-gray; margin-bottom:0; font-size: 0.7rem;}
       div.abstract{
-        font-family: "CMS", "Open Sans", Helvetica, Arial, sans-serif;
-        text-align:justify;
+        
       }
     }
     hr {
@@ -346,6 +348,21 @@ a{
       }
     }
 
+}
+
+.notes{
+  .live{
+    height:60%;
+  }
+  textarea{
+    width:100%;
+    height: 20vh;
+    border: 1px solid #eee;
+    outline: none;
+  }
+  .btn{
+
+  }
 }
 
 .pdf{
@@ -381,7 +398,16 @@ a{
 
 
 
-
+#mask{ /* create are mask */
+    position:fixed;
+    top:0;
+    left:0;
+    background:rgba(0,0,0,0.6);
+    z-index:500;
+    width:100%;
+    height:100%;
+    // display:none;
+}
 
 
 

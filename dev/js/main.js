@@ -29,6 +29,14 @@ function highlight(term, query) {
     return highlighting
 };
 
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'],['\\(','\\)']],
+    processClass: "mathjax",
+    ignoreClass: "body"
+  }
+});
+MathJax.Hub.Configured();
 
 var app = angular.module('PaperHeroApp', ['ngSanitize', 'angular.filter', 'angular-loading-bar']) // , , 'dropzone'
         .controller('PaperHeroCtrl', ['$scope', '$http',
@@ -40,6 +48,7 @@ var app = angular.module('PaperHeroApp', ['ngSanitize', 'angular.filter', 'angul
                 $scope.search_scope = 'local';
                 $scope.right_pane = 'details';
                 $scope.show_pdf_name = '';
+                $scope.loadingAnimation = false;
 
                 $scope.search = function(s, q){
                     $scope.papers = [];
@@ -52,7 +61,7 @@ var app = angular.module('PaperHeroApp', ['ngSanitize', 'angular.filter', 'angul
                     if (typeof q != 'undefined') {
                         url = url + q
                     }
-                    $http.get(url).then(function(papersResponse) {
+                    return $http.get(url).then(function(papersResponse) {
                         $scope.papers = [];
                         angular.forEach(papersResponse.data, function(k, v) {
                             if($scope.search_scope == 'local'){
@@ -72,7 +81,11 @@ var app = angular.module('PaperHeroApp', ['ngSanitize', 'angular.filter', 'angul
                         });
                     });
                 }
-                $scope.get_ids().then(function(){$scope.search();});
+                $scope.get_ids().then(function(){
+                    $scope.search().then(function(){
+                        $scope.details = $scope.papers[0];
+                    })
+                });
 
                 
   
@@ -83,6 +96,10 @@ var app = angular.module('PaperHeroApp', ['ngSanitize', 'angular.filter', 'angul
                     if($scope.right_pane == "pdf"){
                         $scope.readPaper();
                     }
+                    if($scope.right_pane == "notes"){
+                        $scope.loadNotes();
+                    }
+                    // MathJax.Hub.Queue(["Typeset", MathJax.Hub, document.getElementById('abstract')]);
                 };
                 // get paper from google
                 $scope.retrievePaper = function(query_string) {
@@ -99,6 +116,9 @@ var app = angular.module('PaperHeroApp', ['ngSanitize', 'angular.filter', 'angul
                         if($scope.show_pdf_name != $scope.details.pdf){
                             $scope.readPaper();
                         }
+                    }
+                    if(mode == "notes"){
+                        $scope.loadNotes();
                     }
                     
                 };
@@ -132,12 +152,34 @@ var app = angular.module('PaperHeroApp', ['ngSanitize', 'angular.filter', 'angul
                     }
                 };
                 // download paper from arxiv
-                $scope.importPaper = function(arxiv_url) {
-                    $http.get("/fetch/arxiv/" + arxiv_url).then(function(papersResponse) {});
+                $scope.importPaper = function(id) {
+                    $http.get("/fetch/arxiv/" + id).then(function(papersResponse) {
+                        id = $scope.papers.map(function(d) {return d.id;}).indexOf(id);
+                        $scope.papers[id]['in_lib'] = true;
+                    });
+
                 };
                 $scope.paperActive = function (title) {
                     return title === $scope.details.title ? 'paper_active' : '';
                 };
+
+                $scope.saveNotes = function () {
+                    $http({
+                        method: 'POST',
+                        url: '/notes/' + $scope.details.id,
+                        data: $scope.details.notes
+                    });
+                };
+                $scope.loadNotes = function () {
+                    return $http.get('/notes/' + $scope.details.id).then(function(papersResponse) {
+                        $scope.details.notes = papersResponse.data['notes']
+                    });
+                };
+
+
+
+
+                
             }
         ])
 
@@ -152,10 +194,29 @@ app.filter('emph', function() {
     }
 });
 
-MathJax.Hub.Config({
-  tex2jax: {
-    inlineMath: [['$','$'],['\\(','\\)']],
-    processClass: "mathjax",
-    ignoreClass: "body"
-  }
+var converter = new showdown.Converter();
+app.directive("mathjaxBind", function() {
+    return {
+        restrict: "A",
+        controller: ["$scope", "$element", "$attrs", function($scope, $element, $attrs) {
+            $scope.$watch($attrs.mathjaxBind, function(value) {
+                $element.html(converter.makeHtml(value));
+                MathJax.Hub.Queue(["Typeset", MathJax.Hub, $element[0]]);
+            });
+        }]
+    };
 });
+
+app.directive('loading', ['$http', function ($http) {
+    return {
+      restrict: 'A',
+      link: function (scope, element, attrs) {
+        scope.isLoading = function () {
+          return $http.pendingRequests.length > 0;
+        };
+        scope.$watch(scope.isLoading, function (value) {
+          scope.loadingAnimation = value;
+        });
+      }
+    };
+}]);

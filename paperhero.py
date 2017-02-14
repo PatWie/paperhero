@@ -24,6 +24,7 @@ if __name__ == '__main__':
         (r'/papers/local/(.*)', handlers.local.QueryHandler),
         (r'/papers/arxiv/(.*)', handlers.arxiv.QueryHandler),
         (r'/fetch/arxiv/(.*)', handlers.arxiv.FetchHandler),
+        (r'/notes/(.*)', handlers.notes.NotesHandler),
         (r"/(.*)", tornado.web.StaticFileHandler, {"path": root, "default_filename": "template/index.html"})
     ])
 

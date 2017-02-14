@@ -26,7 +26,7 @@ class QueryHandler(base.QueryHandler):
         if self.q == "":
             return []
         cats = "+OR+".join(["cat:cs.CV", "cat:cs.AI", "cat:cs.LG", "cat:cs.CL", "cat:cs.NE", "cat:stat.ML"])
-        q = "http://export.arxiv.org/api/query?search_query=%s+AND+ti:+%s&start=0&max_results=25" % (cats, self.q)
+        q = "http://export.arxiv.org/api/query?search_query=%s+AND+all:+%s&start=0&max_results=25" % (cats, self.q)
         logger.info("query url is  %s" % q)
         raw_xml = xmltodict.parse(urllib2.urlopen(q).read())
         found_papers = []

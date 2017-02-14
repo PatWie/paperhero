@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="vendor/font-awesome-4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="vendor/loadingbar/loading-bar.min.css">
+<script src="http://cdn.rawgit.com/showdownjs/showdown/master/dist/showdown.min.js"></script>
 <script src="vendor/angularjs/angular.min.js"></script>
 <script src="vendor/angularjs/angular-sanitize.min.js"></script>
 <script src="vendor/angularjs/angular-filter.min.js"></script>
@@ -15,6 +16,9 @@
 </head>
 
 <body ng-controller="PaperHeroCtrl">
+<div id="mask" data-loading ng-show="loadingAnimation" >
+	
+</div>
 	<div class="top-container">
 		<div class="left"></div>
 		<div class="middle">
@@ -49,11 +53,11 @@
 			      		<span class="year">{{paper.year}}</span></p>
 				      	<p><span class="authors">{{paper.authors}}</span> <span class="publisher">{{paper.publisher}}</span></p>
 			      </li>
-			      <li ng-show="query.value && ( (search_scope == 'local') || (papers.length == 0))" ng-click="retrievePaper( query.value)">
+			      <li ng-show="query.value" ng-click="retrievePaper( query.value)">
 			      		<p><span>query: <span class="emph">{{query.value}}</span></span></p>
 				      	<p>search paper on arxiv and add it to collection</p>
 			      </li>
-			      <li ng-show="query.value && ( (search_scope == 'local') || (papers.length == 0))" ng-click="importPaper( query.value)">
+			      <li ng-show="query.value && ( (search_scope == 'local') || (papers.length == 0))" ng-click="importPaper(query.value)">
 			      		<p><span>query: <span class="emph">{{query.value}}</span></span></p>
 				      	<p>import paper (only if id is a valid arxiv id: xxxx.xxxxx)</p>
 			      </li>
@@ -70,7 +74,7 @@
 				<a class="btn" target="_blank" href="{{details.pdf}}" ng-show="details.search_scope == 'local'"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> download</a>
 				<a class="btn" ng-click="importPaper(details.id)"  ng-show="details.search_scope == 'arxiv'">import</a>
 				<hr />
-				<div class="abstract">{{details.abstract}}</div>
+				<div class="abstract latex"  mathjax-bind="details.abstract">{{details.abstract}}</div>
 				<img src="{{details.jpg}}" />
 				<hr />
 				
@@ -80,12 +84,13 @@
 	    </div>
 	    <div class="right pdf" id="pdf_area" ng-show="right_pane == 'pdf'">
 	    </div>
-	    <div class="right preview" ng-show="right_pane == 'notes'">
-	    <h2>Notes</h2>
-	    <p class="mathjax">
-	    At some point, you will be able to add notes here. But for today we just point out an important inequality:
-		$$\left( \sum_{k=1}^n a_k b_k \right)^2 \leq \left( \sum_{k=1}^n a_k^2 \right) \left( \sum_{k=1}^n b_k^2 \right)$$
+	    <div class="right notes" ng-show="right_pane == 'notes'">
+	    <p class="latex live"  mathjax-bind="details.notes">
 		</p>
+		<form>
+		<textarea ng-model="details.notes" ng-model-options="{debounce: 1000}"></textarea>
+		<p><a class="btn" ng-click="saveNotes()">save notes</a></p>
+		</form>
 	    </div>
 	</div>
 	<script src="js/main.min.js"></script>
