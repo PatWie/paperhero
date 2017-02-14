@@ -78,6 +78,19 @@ class FetchHandler(tornado.web.RequestHandler):
         raise NotImplementedError
 
 
+class ThumbHandler(tornado.web.RequestHandler):
+    def get(self, q=""):
+        print q
+        pdf_file = "data/" + q + ".pdf"
+        jpg_file = pdf_file[:-4] + ".jpg"
+        if not os.path.isfile(jpg_file):
+            cmd = "montage " + pdf_file + "[0-7] -mode Concatenate -tile x1 -quality 80 -resize x330 -trim " + jpg_file
+            proc = subprocess.Popen([cmd], stdout=subprocess.PIPE, shell=True)
+            (out, err) = proc.communicate()
+            logger.info("... done")
+        self.write(json.dumps({"data": jpg_file}))
+
+
 class TextHandler(tornado.web.RequestHandler):
     def get(self, q=""):
         if os.path.isfile("data/%s" % q):

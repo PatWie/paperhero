@@ -29,7 +29,10 @@ class QueryHandler(base.QueryHandler):
                 paper = yaml.load(f)
                 paper['id'] = file[5:-4]
                 paper['pdf'] = file[:-4] + ".pdf"
-                paper['jpg'] = file[:-4] + ".jpg"
+                if os.path.isfile(file[:-4] + ".jpg"):
+                    paper['jpg'] = file[:-4] + ".jpg"
+                else:
+                    paper['jpg'] = ""
                 paper['filesize'] = file_size(file)
                 paper['search_scope'] = "local"
                 paper['authors'] = HTMLParser.HTMLParser().unescape(paper['authors'])

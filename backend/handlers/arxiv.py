@@ -25,8 +25,22 @@ class QueryHandler(base.QueryHandler):
     def get_papers(self):
         if self.q == "":
             return []
-        cats = "+OR+".join(["cat:cs.CV", "cat:cs.AI", "cat:cs.LG", "cat:cs.CL", "cat:cs.NE", "cat:stat.ML"])
-        q = "http://export.arxiv.org/api/query?search_query=%s+AND+all:+%s&start=0&max_results=25" % (cats, self.q)
+        rsl = self.query(self.q)
+        print len(rsl)
+        if len(rsl) == 0:
+            rsl = self.query(self.q, cats=[])
+        return rsl
+
+    def query(self, q, cats=None):
+        if cats is None:
+            cats = ["cat:cs.CV", "cat:cs.AI", "cat:cs.LG", "cat:cs.CL", "cat:cs.NE", "cat:stat.ML"]
+        if len(cats) == 0:
+            cats = ""
+        else:
+            cats = "+OR+".join(["cat:cs.CV", "cat:cs.AI", "cat:cs.LG", "cat:cs.CL", "cat:cs.NE", "cat:stat.ML"])
+            cats = "%s+AND+" % cats
+
+        q = "http://export.arxiv.org/api/query?search_query=%sall:+%s&start=0&max_results=25" % (cats, self.q)
         logger.info("query url is  %s" % q)
         raw_xml = xmltodict.parse(urllib2.urlopen(q).read())
         found_papers = []

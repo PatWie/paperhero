@@ -163,6 +163,12 @@ var app = angular.module('PaperHeroApp', ['ngSanitize', 'angular.filter',
                     return title === $scope.details.title ? 'paper_active' : '';
                 };
 
+                $scope.genThumb = function () {
+                    return $http.get('/thumb/create/' + $scope.details.id).then(function(response) {
+                        $scope.details.jpg = response.data['data']
+                    });
+
+                };
                 $scope.saveNotes = function () {
                     $http({
                         method: 'POST',

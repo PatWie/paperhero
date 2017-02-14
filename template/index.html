@@ -81,7 +81,8 @@
 						<a class="btn" ng-click="importPaper(details.id)"  ng-show="details.search_scope == 'arxiv'">import</a>
 						<hr />
 						<div class="abstract latex"  mathjax-bind="details.abstract">{{details.abstract}}</div>
-						<img src="{{details.jpg}}" />
+						<img ng-show="details.jpg != ''" src="{{details.jpg}}" />
+						<a class="btn" ng-click="genThumb()" ng-show="details.jpg == ''"> generate Thumbnail</a>
 						<hr />
 						<pre class="bibtex">{{details.bibtex}}</pre>
 					</article>
