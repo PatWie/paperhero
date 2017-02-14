@@ -8,6 +8,7 @@ Features:
 - download papers directly from Arxiv including meta data
 - fuzzy search your local papers
 - paper-preview generator
+- add notes with markdown and LaTeX
 
 [![Demo](./docs/youtube_thumb.jpg)](https://www.youtube.com/watch?v=vVOzSyECiSE "PaperHero - click to watch")
 
