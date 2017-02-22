@@ -9,6 +9,7 @@ Features:
 - live fuzzy-search your local papers
 - add notes with markdown and LaTeX
 - edit meta-data
+- use labels
 
 Each entry consists of up to 4 files:
 - .pdf: the article itself

@@ -10,6 +10,11 @@ $dark-gray:#AFAFAF;
 $line-color:#D9D9D9;
 $top-height:36px;
 
+$tag-colors: #EB53BC, #5662D6, #007FD9, #E17076, #05B0A0, #FAA774, #E5CA77, #7BC862, #6EC9CB;
+
+
+
+
 /************************ MIXIN *****************************************/
 @function convert-angle($value, $unit) {
   $convertable-units: deg grad turn rad;
@@ -94,6 +99,25 @@ html, body {
 }
 
 .emph{color:#da0000 !important;}
+
+@for $i from 1 through 9 {
+  .tag#{$i}{color: nth($tag-colors, $i);}
+  .label#{$i} {
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    color: nth($tag-colors, $i);;
+    background-color: nth($tag-colors, $i);;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    line-height: 0.5rem;
+  }
+}
+.inactive{
+  background-color:#eee !important;
+  color:#eee !important;
+}
+
 
 
 .left{
@@ -199,7 +223,9 @@ html, body {
     -webkit-align-content: stretch;
     align-content: stretch;
 }
-
+.tag_filter{
+  background-color: lighten($menu-bg, 10%);
+}
 .menu {
     background-color:$menu-bg;
     border-bottom: 1px solid darken($menu-bg, 50%);
@@ -290,7 +316,9 @@ a{
         float:left;
         font-size:1.5rem;
         color:#999;
+        line-height: 3rem;
       }
+
 	    p{
         span.title{
           font-weight: bold;
@@ -305,6 +333,7 @@ a{
           color:$year-color;
           float: right;
         }
+        
         span.authors{
           color:#444;
         }

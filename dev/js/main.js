@@ -1,3 +1,4 @@
+
 function highlight(term, query) {
     var termLength = term.length;
     var queryLength = query.length;
@@ -47,6 +48,7 @@ var app = angular.module('PaperHeroApp', ['ngSanitize', 'angular.filter',
                 $scope.details = [];
                 $scope.ids = [];
                 $scope.search_scope = 'local';
+                $scope.filter_tags = [];
                 $scope.right_pane = 'details';
                 $scope.show_pdf_name = '';
                 $scope.loadingAnimation = false;
@@ -167,6 +169,73 @@ var app = angular.module('PaperHeroApp', ['ngSanitize', 'angular.filter',
                 $scope.scopeActive = function (title) {
                     return title === $scope.search_scope ? 'active' : '';
                 };
+
+
+                $scope.toogleFilterTag = function(tag){
+
+                    idx = $scope.filter_tags.indexOf(tag)
+                    // console.log(idx)
+                    // console.log(tag)
+                    if (idx > -1){
+                        // remove
+                        $scope.filter_tags.splice(idx, 1);
+                    }else{
+                        // add
+                        $scope.filter_tags.push(tag)
+                    }
+                    // console.log($scope.filter_tags)
+                }
+                $scope.tagClass = function (tags, expected) {
+                    if (typeof tags != 'undefined') {
+                        return (tags.includes(expected)) ? 'label' + expected : 'label' + expected + ' inactive';
+                    }else{
+                        return 'label' + expected + ' inactive';
+                    }
+                };
+                $scope.filterTagClass = function (tagId) {
+                    return ($scope.filter_tags.indexOf(tagId) > -1) ? "tag_filter" : "";
+                };
+                $scope.toogleTag = function (tagNr) {
+                    if (typeof($scope.details.tags) == 'undefined') {
+                        $scope.details.tags = ""
+                    }
+                    tmp = $scope.details.tags.split(",")
+                    index = tmp.indexOf("" + tagNr);
+                    if (index > -1){
+                        tmp.splice(index, 1);
+                        $scope.details.tags = tmp.join();
+                    }else{
+                        $scope.details.tags = $scope.details.tags + "," + tagNr;
+                    }
+                    $scope.updateProperty($scope.details.id, 'tags', $scope.details.tags);
+
+                };
+                $scope.updateProperty = function(idx, property, newvalue){
+
+                    var dict = {};
+                    dict[property] = newvalue;
+
+                    $http({
+                        method: 'POST',
+                        url: "/property/" + idx,
+                        data: dict
+                    });
+                }
+
+                $scope.hasTag = function (paper, tagNr) {
+                    if (typeof(paper) == 'undefined') {
+                        return false;
+                    }
+                    if (typeof(paper.tags) == 'undefined') {
+                        return false;
+                    }else{
+                        tmp = paper.tags.split(",")
+                        index = tmp.indexOf(tagNr);
+                        return (index > -1);
+                    }
+                    
+                    
+                };
                 $scope.isValidId = function (arxiv_id) {
                     var re = new RegExp("^([0-9]{4}\.[0-9]{4}v?[0-9]*)$");
                     if (re.test(arxiv_id)) {
@@ -251,3 +320,35 @@ app.directive('loading', ['$http', function ($http) {
       }
     };
 }]);
+
+app.filter('filterByTags', function () {
+    return function (items, tags) {
+        if (!tags || !tags.length) {
+          return items;
+        }
+
+        var filtered = []; // Put here only items that match
+        (items || []).forEach(function (item) { // Check each item
+            if (typeof item.tags == 'undefined') {
+
+            }else{
+
+                // console.log("check "+ tags)
+                var matches = tags.every(function (tag) {
+
+                     // console.log("text " + tag + " in " + item.tags)
+                     return (item.tags.split(",").indexOf("" + tag) > -1);
+                });        
+                // console.log(matches)
+                if (matches) {
+                    filtered.push(item);
+                }
+                // filtered.push(item);
+            }
+            
+        });
+        // console.log(filtered)
+        return filtered; // Return the array with items that match any tag
+        
+    };
+});

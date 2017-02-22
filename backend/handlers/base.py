@@ -100,9 +100,21 @@ class TextHandler(tornado.web.RequestHandler):
             self.write(json.dumps({"data": ""}))
 
     def _process(self, data):
+        print data
         return data
 
     def post(self, q=""):
         q = self._process(q)
         with open("data/%s" % q, "w") as f:
             f.write(self.request.body)
+
+
+class PropertyHandler(tornado.web.RequestHandler):
+    def post(self, q=""):
+        d = json.loads(self.request.body)
+        with open("data/" + q + ".yml", "r") as f:
+            paper = yaml.load(f)
+            for k in d.keys():
+                paper[str(k)] = str(d[k])
+        with open("data/" + q + ".yml", 'w') as outfile:
+            yaml.dump(paper, outfile, default_flow_style=False)

@@ -41,80 +41,113 @@
 			<div class="left menu">
 				<ul>
 					<li><span class="cat"><i class="fa fa-folder" aria-hidden="true"></i> Source</span>
-						<ul>
-							<li  ng-class="scopeActive('local')" ng-click="search('local')"><i class="fa fa-home" aria-hidden="true"></i> Local</li>
-							<li  ng-class="scopeActive('arxiv')" ng-click="search('arxiv')"><i class="fa fa-rss" aria-hidden="true"></i> Arxiv</li>
-						</ul>
-					</li>
-				</ul>
-			</div>
-			<div class="middle documents">
-				<div class="child scrollable">
 					<ul>
-						<li ng-show="query.value && isValidId(query.value)" ng-click="importPaper(query.value)">
-							<p><span>import: <span class="emph">{{query.value}}</span></span></p>
-							<p>this seems like a valid arxiv-id</p>
-						</li>
-						<li ng-show="query.value && (search_scope == 'arxiv')" ng-click="retrievePaper( query.value)">
-							<p><span>query: <span class="emph">{{query.value}}</span></span></p>
-							<p>search paper on arxiv</p>
-						</li>
-						<li ng-repeat="paper in papers  | fuzzyBy: 'searchable': query.value"  ng-click="showPaper(paper.id)"  ng-class="paperActive('{{paper.title}}')">
-							<i class="fa fa-paperclip" aria-hidden="true" ng-show="paper.in_lib"></i>
-							<i class="fa fa-reply" aria-hidden="true" ng-show="!paper.in_lib"></i>
-							<p><span class="title" ng-bind-html="paper.title | emph:query.value"></span>
-							<span class="year">{{paper.year}}</span></p>
-							<p><span class="authors" ng-bind-html="paper.authors | emph:query.value"></span> <span class="publisher">{{paper.publisher}}</span></p>
-						</li>
+						<li  ng-class="scopeActive('local')" ng-click="search('local')"><i class="fa fa-home" aria-hidden="true"></i> Local</li>
+						<li  ng-class="scopeActive('arxiv')" ng-click="search('arxiv')"><i class="fa fa-rss" aria-hidden="true"></i> Arxiv</li>
 					</ul>
-					
-				</div>
-			</div>
-			<div class="right preview" ng-show="right_pane == 'details'">
-				<article>
-					<p class="url"><a target="_blank" href="{{details.url}}">{{details.url}}</a></p>
-					<h1>{{details.title}}</h1>
-					<p class="authors">{{details.authors}}</p>
-					<p class="year">({{details.year}})</p>
-					<p class="journal">{{details.publisher}}</p>
-					<a class="btn" ng-click="readPaper()" ng-show="details.search_scope == 'local'"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> read</a>
-					<a class="btn" target="_blank" href="{{details.pdf}}" ng-show="details.search_scope == 'local'"><i class="fa fa-download" aria-hidden="true"></i> download</a>
-					<a class="btn" ng-click="importPaper(details.id)"  ng-show="details.search_scope == 'arxiv'">import</a>
-					<hr />
-					<div class="abstract latex"  mathjax-bind="details.abstract">{{details.abstract}}</div>
-					<img ng-show="details.jpg != ''" src="{{details.jpg}}" />
-					<a class="btn" ng-click="genThumb()" ng-show="details.jpg == ''"> generate Thumbnail</a>
-					<hr />
-				<pre class="bibtex">{{details.bibtex}}</pre>
-			</article>
-		</div>
-		<div class="right pdf" id="pdf_area" ng-show="right_pane == 'pdf'">
-		</div>
-		<div class="right notes" ng-show="right_pane == 'notes'">
-			<p class="latex live"  mathjax-bind="details.notes">
-			</p>
-			<form>
-				<div ui-codemirror="{
-					lineNumbers: true,
-					lineWrapping : true,
-					mode: 'markdown'
-				} " ng-model="details.notes" ng-model-options="{debounce: 1000}"></div>
-				<p><a class="btn" ng-click="saveNotes()">save notes</a></p>
-			</form>
-		</div>
-		<div class="right meta" ng-show="right_pane == 'meta'">
-			<form>
-				<p>Attention! You edit the raw data!</p>
-				<div ui-codemirror="{
-					lineNumbers: true,
-					lineWrapping : true,
-					mode: 'yaml'
-				}" ng-model="details.meta"></div>
-				<p><a class="btn" ng-click="saveMeta()">save meta</a></p>
-				<p><a class="btn" ng-click="loadMeta()">load meta</a></p>
-			</form>
+				</li>
+				<li><span class="cat"><i class="fa fa-tags" aria-hidden="true"></i> Labels</span>
+				<ul>
+					<li ng-class="filterTagClass(1)" class="tag1" ng-click="toogleFilterTag(1)"><span class="label1">&nbsp;</span> to read</li>
+					<li ng-class="filterTagClass(2)" class="tag2" ng-click="toogleFilterTag(2)"><span class="label2">&nbsp;</span> to check</li>
+					<li ng-class="filterTagClass(3)" class="tag3" ng-click="toogleFilterTag(3)"><span class="label3">&nbsp;</span> done</li>
+					<li ng-class="filterTagClass(4)" class="tag4" ng-click="toogleFilterTag(4)"><span class="label4">&nbsp;</span> unclear</li>
+					<li ng-class="filterTagClass(5)" class="tag5" ng-click="toogleFilterTag(5)"><span class="label5">&nbsp;</span> discussable</li>
+					<li ng-class="filterTagClass(6)" class="tag6" ng-click="toogleFilterTag(6)"><span class="label6">&nbsp;</span> uninter.</li>
+					<li ng-class="filterTagClass(7)" class="tag7" ng-click="toogleFilterTag(7)"><span class="label7">&nbsp;</span> new</li>
+					<li ng-class="filterTagClass(8)" class="tag8" ng-click="toogleFilterTag(8)"><span class="label8">&nbsp;</span> suggested</li>
+					<li ng-class="filterTagClass(9)" class="tag9" ng-click="toogleFilterTag(9)"><span class="label9">&nbsp;</span> interesting</li>
+				</ul>
+			</li>
+		</ul>
+	</div>
+	<div class="middle documents">
+		<div class="child scrollable">
+			<ul>
+				<li ng-show="query.value && isValidId(query.value)" ng-click="importPaper(query.value)">
+					<p><span>import: <span class="emph">{{query.value}}</span></span></p>
+					<p>this seems like a valid arxiv-id</p>
+				</li>
+				<li ng-show="query.value && (search_scope == 'arxiv')" ng-click="retrievePaper( query.value)">
+					<p><span>query: <span class="emph">{{query.value}}</span></span></p>
+					<p>search paper on arxiv</p>
+				</li>
+				<li ng-repeat="paper in papers  | fuzzyBy: 'searchable': query.value | filterByTags: filter_tags""  ng-click="showPaper(paper.id)"  ng-class="paperActive('{{paper.title}}')">
+					<i class="fa fa-paperclip" aria-hidden="true" ng-show="paper.in_lib"></i>
+					<i class="fa fa-reply" aria-hidden="true" ng-show="!paper.in_lib"></i>
+					<p><span class="title" ng-bind-html="paper.title | emph:query.value"></span>
+					<span class="year">{{paper.year}}</span></p>
+					<p><span class="authors" ng-bind-html="paper.authors | emph:query.value"></span> <span class="publisher">{{paper.publisher}}</span></p>
+					<p class="labels">
+						<span class="label1" ng-show="paper.tags.includes(1)">&nbsp;</span>
+						<span class="label2" ng-show="paper.tags.includes(2)">&nbsp;</span>
+						<span class="label3" ng-show="paper.tags.includes(3)">&nbsp;</span>
+						<span class="label4" ng-show="paper.tags.includes(4)">&nbsp;</span>
+						<span class="label5" ng-show="paper.tags.includes(5)">&nbsp;</span>
+						<span class="label6" ng-show="paper.tags.includes(6)">&nbsp;</span>
+						<span class="label7" ng-show="paper.tags.includes(7)">&nbsp;</span>
+						<span class="label8" ng-show="paper.tags.includes(8)">&nbsp;</span>
+						<span class="label9" ng-show="paper.tags.includes(9)">&nbsp;</span>
+					</p>
+				</li>
+			</ul>
+			
 		</div>
 	</div>
-	<script src="js/main.min.js"></script>
+	<div class="right preview" ng-show="right_pane == 'details'">
+		<span ng-class="tagClass(details.tags, '1')" ng-click="toogleTag(1)" >&nbsp;</span>
+		<span ng-class="tagClass(details.tags, '2')" ng-click="toogleTag(2)" >&nbsp;</span>
+		<span ng-class="tagClass(details.tags, '3')" ng-click="toogleTag(3)" >&nbsp;</span>
+		<span ng-class="tagClass(details.tags, '4')" ng-click="toogleTag(4)" >&nbsp;</span>
+		<span ng-class="tagClass(details.tags, '5')" ng-click="toogleTag(5)" >&nbsp;</span>
+		<span ng-class="tagClass(details.tags, '6')" ng-click="toogleTag(6)" >&nbsp;</span>
+		<span ng-class="tagClass(details.tags, '7')" ng-click="toogleTag(7)" >&nbsp;</span>
+		<span ng-class="tagClass(details.tags, '8')" ng-click="toogleTag(8)" >&nbsp;</span>
+		<span ng-class="tagClass(details.tags, '9')" ng-click="toogleTag(9)" >&nbsp;</span>
+		<article>
+			<p class="url"><a target="_blank" href="{{details.url}}">{{details.url}}</a></p>
+			<h1>{{details.title}}</h1>
+			<p class="authors">{{details.authors}}</p>
+			<p class="year">({{details.year}})</p>
+			<p class="journal">{{details.publisher}}</p>
+			<a class="btn" ng-click="readPaper()" ng-show="details.search_scope == 'local'"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> read</a>
+			<a class="btn" target="_blank" href="{{details.pdf}}" ng-show="details.search_scope == 'local'"><i class="fa fa-download" aria-hidden="true"></i> download</a>
+			<a class="btn" ng-click="importPaper(details.id)"  ng-show="details.search_scope == 'arxiv'">import</a>
+			<hr />
+			<div class="abstract latex"  mathjax-bind="details.abstract">{{details.abstract}}</div>
+			<img ng-show="details.jpg != ''" src="{{details.jpg}}" />
+			<a class="btn" ng-click="genThumb()" ng-show="details.jpg == ''"> generate Thumbnail</a>
+			<hr />
+		<pre class="bibtex">{{details.bibtex}}</pre>
+	</article>
+</div>
+<div class="right pdf" id="pdf_area" ng-show="right_pane == 'pdf'">
+</div>
+<div class="right notes" ng-show="right_pane == 'notes'">
+	<p class="latex live"  mathjax-bind="details.notes">
+	</p>
+	<form>
+		<div ui-codemirror="{
+			lineNumbers: true,
+			lineWrapping : true,
+			mode: 'markdown'
+		} " ng-model="details.notes" ng-model-options="{debounce: 1000}"></div>
+		<p><a class="btn" ng-click="saveNotes()">save notes</a></p>
+	</form>
+</div>
+<div class="right meta" ng-show="right_pane == 'meta'">
+	<form>
+		<p>Attention! You edit the raw data!</p>
+		<div ui-codemirror="{
+			lineNumbers: true,
+			lineWrapping : true,
+			mode: 'yaml'
+		}" ng-model="details.meta"></div>
+		<p><a class="btn" ng-click="saveMeta()">save meta</a></p>
+		<p><a class="btn" ng-click="loadMeta()">load meta</a></p>
+	</form>
+</div>
+</div>
+<script src="js/main.min.js"></script>
 </body>
 </html>
