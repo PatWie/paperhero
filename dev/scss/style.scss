@@ -1,8 +1,9 @@
 @import url('https://fonts.googleapis.com/css?family=Open+Sans|Ubuntu|Roboto');
 
 
-$base-color: #2174B1;
-$menu-bg: #373F45;
+$base-color: #086fbb;
+$year-color: #c3c3c3;
+$menu-bg: #34373a;
 $highlight: darken($base-color, 20%);
 // $gray:#e0e0e0;
 $dark-gray:#AFAFAF;
@@ -87,12 +88,13 @@ html, body {
     margin:0;
     // font-family: 'Roboto', sans-serif;
     // font-family: 'Raleway', sans-serif;
-    // font-family: 'Open Sans', sans-serif;
-    font-family: 'Ubuntu', sans-serif;
+    font-family: 'Open Sans', sans-serif;
+    // font-family: 'Ubuntu', sans-serif;
     font-size: 100%;
 }
 
-.emph{color:red !important;}
+.emph{color:#da0000 !important;}
+
 
 .left{
   width:200px;
@@ -204,25 +206,38 @@ html, body {
     .fa{
             margin-right:0.5rem;
           }
+    .active{background-color: lighten($menu-bg, 5%);}
     ul{
       list-style-type: none;
       line-height: 1rem;
-      margin:1rem;
+      margin:0;
       padding:0;
+      margin-top:1rem;
       color:#c5c5c5;
       font-weight: bold;
+      li{
+        
+      }
+      .cat{
+        padding: 5px 1rem;
+        line-height: 2rem;
+      }
       ul{
-        margin-top:0;
+        padding:0;
+        margin:0;
         cursor: pointer;
         // second child
         font-weight: normal;
         li{
-          margin-top:0.2rem;
+          margin:0;
+          padding: 5px 2rem;
           &:hover{
-            color:lighten(#c5c5c5, 20%);
+            background-color: lighten($menu-bg, 10%);
           }
+
         }
       }
+
     }
 }
 
@@ -236,6 +251,7 @@ a{
   position:relative;
   font-size: 0.8rem;
   border-right: 1px solid $line-color;
+  letter-spacing: 0.5px;
   .child {
     position:absolute;
     width:100%;
@@ -247,7 +263,8 @@ a{
 		padding:0;
 		li{
       cursor: pointer;
-			@include linear-gradient(to bottom, #F8F8F8 , #F2F2F2);
+      background-color:#ffffff;
+			// @include linear-gradient(to bottom, #F8F8F8 , #F2F2F2);
 			// @include linear-gradient(to bottom, red , blue);
 			// display: block;
 			// a{
@@ -272,21 +289,24 @@ a{
         padding-right: 1.5rem;
         float:left;
         font-size:1.5rem;
+        color:#999;
       }
 	    p{
         span.title{
           font-weight: bold;
-          color:$highlight;
+          // color:$highlight;
+          color:#12588c;
+          // font-size:1.0001rem;
         }
         
 
         span.year{
           font-weight:normal;
-          color:$base-color;
+          color:$year-color;
           float: right;
         }
         span.authors{
-          
+          color:#444;
         }
         span.publisher{
           float: right;
@@ -295,15 +315,24 @@ a{
 
 	    }
       &:hover{
-        @include linear-gradient(to bottom, darken(#F8F8F8, 3%) , darken(#F8F8F8, 3%));
+        background-color:#F2F2F2;
+        
       }
 		}
-    .paper_active{
-      @include linear-gradient(to bottom, #E3E3E3 , #D3D3D3);
-      &:hover{
-        @include linear-gradient(to bottom, darken(#E3E3E3, 3%) , darken(#D3D3D3, 3%));
+    .paper_active, .paper_active:hover{
+      // @include linear-gradient(to bottom, #E3E3E3 , #D3D3D3);
+      // &:hover{
+      //   @include linear-gradient(to bottom, darken(#E3E3E3, 3%) , darken(#D3D3D3, 3%));
+      // }
+      background-color:$base-color;
+      color:white;
+      .emph{color:#fb5151 !important;}
+      span.title, span.year, span.authors, span.publisher, .fa{
+        color:white;
       }
-
+    }
+    .paper_active:hover{
+      background-color:darken($base-color, 2%);
     }
 
 	}
@@ -320,11 +349,14 @@ a{
       // h1{
       //   font-size: 1.5rem;
       // }
-      h1{margin-top:0;}
+      h1{margin:0.1em 0;}
       p{line-height: 1.2rem;}
       p.authors{color:$highlight; margin-bottom:0;}
       p.journal{color:$dark-gray; margin-top:0;}
-      p.url{color:$dark-gray; margin-bottom:0; font-size: 0.7rem;}
+      p.url{ 
+        margin-bottom:0; 
+        a{color:$dark-gray; font-size: 0.7rem; margin:0}}
+      .year{color:$year-color; margin:0;font-size: 0.9rem;}
       div.abstract{
         
       }
@@ -332,7 +364,7 @@ a{
     hr {
         margin: 1rem -2rem 1rem;
         border: 0;
-        border-top: 1px solid #c9c7c7;
+        border-top: 1px solid $line-color;
     }
     img{
       padding:0;
@@ -396,16 +428,19 @@ textarea{
   -webkit-border-radius: 7;
   -moz-border-radius: 7;
   border-radius: 7px;
-  color: #ffffff;
+  color: #444;
   padding: 4px;
   padding-left: 6px;
   padding-right: 6px;
   background: $dark-gray;
   text-decoration: none;
+  background-color:#F2F2F2;
+  border:1px solid #D9D9D9;
   &:hover {
     color: #ffffff !important;
     background: $base-color;
     text-decoration: none;
+    border:1px solid darken($base-color, 10%);
   }
 }
 

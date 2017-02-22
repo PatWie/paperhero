@@ -3,6 +3,6 @@ libsass
 jsmin
 pyyaml
 google-api-python-client
-xmltodict
 termcolor
 bibtexparser
+feedparser

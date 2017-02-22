@@ -70,6 +70,7 @@ var app = angular.module('PaperHeroApp', ['ngSanitize', 'angular.filter',
                             }else{
                                 k['in_lib'] = ($scope.ids.indexOf(k.id) != -1);
                             }
+                            k['searchable'] = k['title'] + k['authors'] + k['abstract']
                             $scope.papers.push(k);
                         });
                     });
@@ -161,6 +162,18 @@ var app = angular.module('PaperHeroApp', ['ngSanitize', 'angular.filter',
                 };
                 $scope.paperActive = function (title) {
                     return title === $scope.details.title ? 'paper_active' : '';
+                };
+
+                $scope.scopeActive = function (title) {
+                    return title === $scope.search_scope ? 'active' : '';
+                };
+                $scope.isValidId = function (arxiv_id) {
+                    var re = new RegExp("^([0-9]{4}\.[0-9]{4}v?[0-9]*)$");
+                    if (re.test(arxiv_id)) {
+                        return true;
+                    } else {
+                        return false;
+                    }
                 };
 
                 $scope.genThumb = function () {

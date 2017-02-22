@@ -1,22 +1,25 @@
 import base
 import urllib2
-import xmltodict
+import feedparser
 from logger import logger
+
+feedparser._FeedParserMixin.namespaces['http://a9.com/-/spec/opensearch/1.1/'] = 'opensearch'
+feedparser._FeedParserMixin.namespaces['http://arxiv.org/schemas/atom'] = 'arxiv'
 
 
 def parse_arxiv_entry(entry):
     paper = dict()
-    paper['title'] = str(entry['title'])
-    paper['id'] = str(entry['id'].replace("http://arxiv.org/abs/", "").split("v")[0])
-    paper['abstract'] = str(entry['summary']).replace("\n", "")
+    paper['title'] = entry.title
+    paper['id'] = entry.id.split('/abs/')[-1].split("v")[0]
+    paper['abstract'] = entry.summary.replace("\n", "")
     try:
-        authors = [x.values()[0] for x in entry['author']]
+        authors = '; '.join(author.name for author in entry.authors)
     except Exception as e:
         logger.warn(e)
-        authors = entry['author']
-    paper['authors'] = "; ".join(authors)
-    paper['year'] = str(entry['published'])
-    paper['url'] = str(entry['id'])
+        authors = ''
+    paper['authors'] = authors
+    paper['year'] = str(entry.published)
+    paper['url'] = str(entry.id)
     paper['search_scope'] = 'arxiv'
     return paper
 
@@ -38,26 +41,21 @@ class QueryHandler(base.QueryHandler):
             cats = ""
         else:
             cats = "+OR+".join(["cat:cs.CV", "cat:cs.AI", "cat:cs.LG", "cat:cs.CL", "cat:cs.NE", "cat:stat.ML"])
-            cats = "%s+AND+" % cats
+            cats = "%%28%s%%29+AND+" % cats
 
-        q = "http://export.arxiv.org/api/query?search_query=%sall:+%s&start=0&max_results=25" % (cats, self.q)
+        q = "http://export.arxiv.org/api/query?search_query=%s%%28au:+%s+OR+ti:+%s%%29&start=0&max_results=25"
+        q = q % (cats, self.q, self.q)
         logger.info("query url is  %s" % q)
-        raw_xml = xmltodict.parse(urllib2.urlopen(q).read())
+        response = urllib2.urlopen(q).read()
+        feed = feedparser.parse(response)
         found_papers = []
-        if 'entry' in raw_xml['feed'].keys():
-            logger.info("found %i papers" % len(raw_xml['feed']['entry']))
-            if not isinstance(raw_xml['feed']['entry'], list):
-                # ugly fix for single paper
-                entries = [raw_xml['feed']['entry']]
-            else:
-                entries = raw_xml['feed']['entry']
 
-            for entry in entries:
-                try:
-                    found_papers.append(parse_arxiv_entry(entry))
-                except Exception as e:
-                    logger.warn(e)
-            logger.info("analyzed %i papers" % len(found_papers))
+        logger.info("arxiv returns %i entries" % len(feed.entries))
+        for entry in feed.entries:
+            paper = parse_arxiv_entry(entry)
+            found_papers.append(paper)
+
+        logger.info("analyzed %i papers" % len(found_papers))
         return found_papers
 
 
@@ -67,12 +65,11 @@ class FetchHandler(base.FetchHandler):
 
     def _parse(self, response):
         try:
-            d = xmltodict.parse(response)
-            if 'feed' in d.keys():
-                if 'entry' in d['feed'].keys():
-                    paper = parse_arxiv_entry(d['feed']['entry'])
-                    paper['search_scope'] = "arxiv"
-                    remote_pdf = "http://arxiv.org/pdf/%s.pdf" % paper['id']
-                    return paper['id'], remote_pdf, paper
+            feed = feedparser.parse(response)
+            entry = next(feed.entries)
+            paper = parse_arxiv_entry(entry)
+            paper['search_scope'] = "arxiv"
+            remote_pdf = "http://arxiv.org/pdf/%s.pdf" % paper['id']
+            return paper['id'], remote_pdf, paper
         except Exception:
             return []
