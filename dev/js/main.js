@@ -70,7 +70,7 @@ var app = angular.module('PaperHeroApp', ['ngSanitize', 'angular.filter',
                             }else{
                                 k['in_lib'] = ($scope.ids.indexOf(k.id) != -1);
                             }
-                            k['searchable'] = k['title'] + k['authors'] + k['abstract']
+                            k['searchable'] = k['title'] + k['authors']
                             $scope.papers.push(k);
                         });
                     });
