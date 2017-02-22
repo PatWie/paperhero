@@ -189,7 +189,7 @@ html, body {
 
 
 .main-container {
-    height:calc(100% - #{$top-height} - 1px);
+    min-height:calc(100% - #{$top-height} - 1px);
     display:flex;
     display: -webkit-flex;
     flex-direction: row;
