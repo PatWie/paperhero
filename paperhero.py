@@ -17,6 +17,7 @@ class Application(tornado.web.Application):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-p', "--port", default="8888", type=int)
+    parser.add_argument('-a', "--address", default="127.0.0.1", type=str)
     args = parser.parse_args()
 
     logger.info("start Application ...")
@@ -29,6 +30,6 @@ if __name__ == '__main__':
         (r"/(.*)", tornado.web.StaticFileHandler, {"path": root, "default_filename": "template/index.html"})
     ])
 
-    logger.info("listen on %i ..." % args.port)
-    application.listen(args.port)
+    logger.info("listen on %s:%i ..." % (args.address, args.port))
+    application.listen(args.port, address=args.address)
     tornado.ioloop.IOLoop.instance().start()
