@@ -66,10 +66,12 @@ class FetchHandler(base.FetchHandler):
     def _parse(self, response):
         try:
             feed = feedparser.parse(response)
-            entry = next(feed.entries)
+            print feed.entries
+            entry = feed.entries[0]
             paper = parse_arxiv_entry(entry)
             paper['search_scope'] = "arxiv"
             remote_pdf = "http://arxiv.org/pdf/%s.pdf" % paper['id']
             return paper['id'], remote_pdf, paper
-        except Exception:
-            return []
+        except Exception as e:
+            logger.warn(e)
+            return "", "", []
