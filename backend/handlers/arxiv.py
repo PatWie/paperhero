@@ -44,7 +44,7 @@ class QueryHandler(base.QueryHandler):
             cats = "+OR+".join(["cat:cs.CV", "cat:cs.AI", "cat:cs.LG", "cat:cs.CL", "cat:cs.NE", "cat:stat.ML"])
             cats = "%%28%s%%29+AND+" % cats
 
-        q = "http://export.arxiv.org/api/query?search_query=%s%%28au:+%s+OR+ti:+%s%%29&start=0&max_results=25"
+        q = "http://export.arxiv.org/api/query?search_query=%s%%28au:+%s+OR+ti:+%s%%29&start=0&max_results=50"
         q = q % (cats, self.q, self.q)
         logger.info("query url is  %s" % q)
         response = urllib2.urlopen(q).read()
@@ -71,6 +71,7 @@ class FetchHandler(base.FetchHandler):
             entry = feed.entries[0]
             paper = parse_arxiv_entry(entry)
             paper['search_scope'] = "arxiv"
+            paper['tags'] = "1,7"
             remote_pdf = "http://arxiv.org/pdf/%s.pdf" % paper['id']
             return paper['id'], remote_pdf, paper
         except Exception as e:

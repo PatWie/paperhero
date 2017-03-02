@@ -54,6 +54,7 @@ var app = angular.module('PaperHeroApp', ['ngSanitize', 'angular.filter',
                 $scope.loadingAnimation = false;
 
                 $scope.search = function(s, q){
+                    console.log("search");
                     $scope.papers = [];
                     if (typeof s != 'undefined') {
                         $scope.search_scope = s
@@ -64,7 +65,8 @@ var app = angular.module('PaperHeroApp', ['ngSanitize', 'angular.filter',
                     if (typeof q != 'undefined') {
                         url = url + q
                     }
-                    return $http.get(url).then(function(papersResponse) {
+                    return $http.get(url)
+                    .then(function(papersResponse) {
                         $scope.papers = [];
                         angular.forEach(papersResponse.data, function(k, v) {
                             if($scope.search_scope == 'local'){
