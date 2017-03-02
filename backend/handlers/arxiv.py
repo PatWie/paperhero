@@ -35,6 +35,7 @@ class QueryHandler(base.QueryHandler):
         return rsl
 
     def query(self, q, cats=None):
+        self.q = self.q.replace(' ', '%20')
         if cats is None:
             cats = ["cat:cs.CV", "cat:cs.AI", "cat:cs.LG", "cat:cs.CL", "cat:cs.NE", "cat:stat.ML"]
         if len(cats) == 0:
