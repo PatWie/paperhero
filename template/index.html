@@ -72,12 +72,12 @@
 					<p><span>query: <span class="emph">{{query.value}}</span></span></p>
 					<p>search paper on arxiv</p>
 				</li>
-				<li ng-repeat="paper in papers  | fuzzyBy: 'searchable': query.value | filterByTags: filter_tags""  ng-click="showPaper(paper.id)"  ng-class="paperActive('{{paper.title}}')">
+				<li ng-repeat="paper in papers  | fuzz: 'searchable': query.value | filterByTags: filter_tags""  ng-click="showPaper(paper.id)"  ng-class="paperActive('{{paper.title}}')">
 					<i class="fa fa-paperclip" aria-hidden="true" ng-show="paper.in_lib"></i>
 					<i class="fa fa-reply" aria-hidden="true" ng-show="!paper.in_lib"></i>
 					<p><span class="title" ng-bind-html="paper.title | emph:query.value"></span>
 					<span class="year">{{paper.year}}</span></p>
-					<p><span class="authors" ng-bind-html="paper.authors | emph:query.value"></span> <span class="publisher">{{paper.publisher}}</span></p>
+					<p><span class="authors" ng-bind-html="paper.authors"></span> <span class="publisher">{{paper.publisher}}</span></p>
 					<p class="labels">
 						<span class="label1" ng-show="paper.tags.includes(1)">&nbsp;</span>
 						<span class="label2" ng-show="paper.tags.includes(2)">&nbsp;</span>
