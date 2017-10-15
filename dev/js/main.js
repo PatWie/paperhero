@@ -278,7 +278,7 @@ var app = angular.module('PaperHeroApp', ['ngSanitize', 'angular.filter',
 
 app.filter('emph', function() {
     return function(input, e) {
-        if (typeof e == 'undefined' or e.length == 0) {
+        if (typeof e == 'undefined' || e.length == 0) {
             return input
         } else {
             return fuzzysort.highlight(fuzzysort.single(e, input), '<span class="emph">', '</span>') // *t*es*t*
